@@ -7,6 +7,7 @@ export default {
     theme: {
         fontFamily: {
             display: ["Poppins", "sans-serif"],
+            logo: ["Ingrid Darling", "sans-serif"],
         },
         extend: {
             colors: {
