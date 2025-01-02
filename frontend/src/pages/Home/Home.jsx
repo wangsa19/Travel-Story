@@ -118,16 +118,16 @@ const Home = () => {
             {/* Add & Edit Travel Story Modal */}
             <Modal
                 isOpen={openAddEditModal.isShown}
-                onRequestClose={() => {}}
-                style={{ 
+                onRequestClose={() => { }}
+                style={{
                     overlay: {
                         backgroundColor: "rgba(0,0,0,0.2)",
                         zIndex: 999,
                     },
-                 }}
-                 appElement={document.getElementById("root")}
-                 className="model-box"
-            />
+                }}
+                appElement={document.getElementById("root")}
+                className="model-box"
+            >
                 <AddEditTravelStory
                     type={openAddEditModal.type}
                     storyInfo={openAddEditModal.data}
@@ -136,6 +136,8 @@ const Home = () => {
                     }}
                     getAllTravelStories={getAllTravelStories}
                 />
+            </Modal>
+            
             <button
                 className='w-16 h-16 flex items-center justify-center rounded-full bg-primary hover:bg-cyan-400 fixed right-10 bottom-10'
                 onClick={() => {
