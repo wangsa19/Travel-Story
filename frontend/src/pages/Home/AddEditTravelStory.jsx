@@ -69,27 +69,35 @@ const AddEditTravelStory = ({
 
     // update travel story
     const updateTravelStory = async () => {
+        const storyId = storyInfo._id;
         try {
             let imageUrl = "";
 
-            // upload image if present
-            if (storyImg) {
-                const imgUploadsRes = await uploadImage(storyImg);
-                imageUrl = imgUploadsRes.imageUrl || "";
-            }
-
-            const response = await axiosInstance.post("/add-travel-story", {
+            let postData = {
                 title,
                 story,
-                imageUrl: imageUrl || "",
+                imageUrl: storyInfo.imageUrl || "",
                 visitedLocation,
                 visitedDate: visitedDate
                     ? moment(visitedDate).valueOf()
                     : moment().valueOf(),
-            });
+            }
+
+            if (typeof storyImg === "object") {
+                // upload new image
+                const imgUploadRes = await uploadImage(storyImg);
+                imageUrl = imgUploadRes.imageUrl || "";
+
+                postData = {
+                    ...postData,
+                    imageUrl: imageUrl,
+                }
+            }
+
+            const response = await axiosInstance.put("/edit-story/" + storyId, postData);
 
             if (response.data && response.data.story) {
-                toast.success("Story Added Successfully");
+                toast.success("Story Updated Successfully");
                 // refresh stories
                 getAllTravelStories();
                 // close modal or form
@@ -128,7 +136,31 @@ const AddEditTravelStory = ({
             addNewTravelStory();
         }
     };
-    const handleDeleteStoryImg = () => { };
+
+    const handleDeleteStoryImg = () => {
+        // deleting the image
+        const deleteImgRes = axiosInstance.delete("/delete-image/", {
+            params: {
+                imageUrl: storyInfo.imageUrl,
+            },
+        });
+
+        if (deleteImgRes.data) {
+            const storyId = storyInfo._id;
+
+            let postData = {
+                title,
+                story,
+                visitedLocation,
+                visitedDate: moment().valueOf(),
+                imageUrl: "",
+            }
+
+            const response = axiosInstance.put("/edit-story/" + storyId, postData);
+            setStoryImg(null);
+        }
+    };
+
     return (
         <div className='relative'>
             <div className="flex items-center justify-between">
@@ -175,10 +207,10 @@ const AddEditTravelStory = ({
                 />
 
                 <div className='my-3'>
-                    <DateSelector date={visitedDate} setDate={setVisitedDate} handleDeleteImg={handleDeleteStoryImg} />
+                    <DateSelector date={visitedDate} setDate={setVisitedDate}  />
                 </div>
 
-                <ImageSelector image={storyImg} setImage={setStoryImg} />
+                <ImageSelector image={storyImg} setImage={setStoryImg} handleDeleteImg={handleDeleteStoryImg} />
 
                 <div className="flex flex-col gap-2 mt-4">
                     <label htmlFor="" className="input-label">STORY</label>

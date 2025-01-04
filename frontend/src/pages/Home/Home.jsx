@@ -8,12 +8,22 @@ import TravelStoryCard from '../../components/Cards/TravelStoryCard';
 import { ToastContainer, toast } from 'react-toastify';
 import AddEditTravelStory from './AddEditTravelStory';
 import ViewTravelStory from './ViewTravelStory';
+import EmptyCard from '../../components/Cards/EmptyCard';
+import { DayPicker } from 'react-day-picker';
+import moment from 'moment';
+import FilterInfoTitle from '../../components/Cards/FilterInfoTitle';
+import { getEmptyCardMessage } from '../../utils/helper';
 
 const Home = () => {
     const navigate = useNavigate();
 
     const [userInfo, setUserInfo] = useState(null);
     const [allStories, setAllStories] = useState([]);
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterType, setFilterType] = useState("");
+
+    const [dateRange, setDateRange] = useState({ form: null, to: null });
 
     const [openAddEditModal, setOpenAddEditModal] = useState({
         isShown: false,
@@ -84,12 +94,95 @@ const Home = () => {
 
             if (response.data && response.data.story) {
                 toast.success("Story Updated successfully");
-                getAllTravelStories();
+
+                if (filterType === "search" && searchQuery) {
+                    onSearchStory(searchQuery);
+                } else if (filterType === "date") {
+                    filterStoriesByDate(dateRange);
+                } else {    
+                    getAllTravelStories();
+                }
             }
         } catch (error) {
             console.log("An uxpected error occurred. Please try again.", error);
         }
     };
+
+    // handle delete story
+    const deleteTravelStory = async (data) => {
+        const storyId = data._id;
+        try {
+            const response = await axiosInstance.delete("/delete-story/" + storyId);
+
+            if (response.data && !response.data.error) {
+                toast.success("Story Deleted successfully");
+                setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
+                getAllTravelStories();
+            }
+        } catch (error) {
+            console.log("An unexpected error occurred. Please try again.", error);
+        }
+    };
+
+    // search query
+    const onSearchStory = async (query) => {
+        try {
+            const response = await axiosInstance.get("/search", {
+                params: {
+                    query,
+                }
+            });
+
+            if (response.data && response.data.stories) {
+                setFilterType("search");
+                setAllStories(response.data.stories);
+            }
+
+        } catch (error) {
+            console.log("An unexpected error occurred. Please try again.", error);
+        }
+    }
+
+    const handleClearSearch = () => {
+        setFilterType("");
+        getAllTravelStories();
+    };
+
+    // Handl Filter Travel Story By Date Range
+    const filterStoriesByDate = async (day) => {
+        try {
+            const startDate = day.from ? moment(day.from).valueOf() : null;
+            const endDate = day.to ? moment(day.to).valueOf() : null;
+
+            if (startDate && endDate) {
+                const response = await axiosInstance.get("/travel-stories/filter", {
+                    params: {
+                        startDate,
+                        endDate,
+                    }
+                });
+
+                if (response.data && response.data.stories) {
+                    setFilterType("date");
+                    setAllStories(response.data.stories);
+                }
+            }
+        } catch (error) {
+            console.log("An unexpected error occurred. Please try again.", error);
+        }
+    };
+
+    // handle Date Range Select
+    const handleDayClick = (day) => {
+        setDateRange(day);
+        filterStoriesByDate(day);
+    }
+
+    const resetFilter = () => {
+        setDateRange({ from: null, to: null });
+        setFilterType("");
+        getAllTravelStories();
+    }
 
     useEffect(() => {
         getAllTravelStories();
@@ -101,9 +194,24 @@ const Home = () => {
 
     return (
         <>
-            <Navbar userInfo={userInfo} />
+            <Navbar
+                userInfo={userInfo}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onSearchNote={onSearchStory}
+                handleClearSearch={handleClearSearch}
+            />
 
             <div className='container mx-auto py-10'>
+
+                <FilterInfoTitle
+                    filterType={filterType}
+                    filterDates={dateRange}
+                    onClear={() => {
+                        resetFilter();
+                    }}
+                />
+
                 <div className="flex gap-7">
                     <div className="flex-1">
                         {allStories.length > 0 ? (
@@ -125,10 +233,22 @@ const Home = () => {
                                 })}
                             </div>
                         ) : (
-                            <>Empty Card Here</>
+                            <EmptyCard filterType={filterType} message={getEmptyCardMessage(filterType)} />
                         )}
                     </div>
-                    <div className="w-[320px]"></div>
+                    <div className="w-[335px]">
+                        <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg'>
+                            <div className="p-3">
+                                <DayPicker
+                                    captionLayout='dropdown-buttons'
+                                    mode='range'
+                                    selected={dateRange}
+                                    onSelect={handleDayClick}
+                                    pagedNavigation
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -168,7 +288,7 @@ const Home = () => {
                 appElement={document.getElementById("root")}
                 className="model-box"
             >
-                <ViewTravelStory 
+                <ViewTravelStory
                     storyInfo={openViewModal.data || null}
                     onClose={() => {
                         setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
@@ -177,7 +297,9 @@ const Home = () => {
                         setOpenViewModal((prevState) => ({ ...prevState, isShown: false }));
                         handleEdit(openViewModal.data || null);
                     }}
-                    onDeleteClick={() => {}}
+                    onDeleteClick={() => {
+                        deleteTravelStory(openViewModal.data || null);
+                    }}
                 />
             </Modal>
 
