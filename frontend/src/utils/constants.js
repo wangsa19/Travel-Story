@@ -1,1 +1,1 @@
-export const BASE_URL = 'http://localhost:8000';
+export const BASE_URL = 'travel-story-api-wangsa19s-projects.vercel.app';
