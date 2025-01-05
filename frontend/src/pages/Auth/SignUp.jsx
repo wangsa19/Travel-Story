@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import PasswordInput from '../../components/Input/PasswordInput'
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
+import bgImage from '../../assets/images/signup-bg-img.png';
 
 const SignUp = () => {
     const [name, setName] = useState("");
@@ -44,7 +45,7 @@ const SignUp = () => {
                 localStorage.setItem("token", response.data.accessToken);
                 navigate("/dashboard");
             }
-        }catch (error) {
+        } catch (error) {
             // handle login error
             if (
                 error.response &&
@@ -65,7 +66,7 @@ const SignUp = () => {
             <div className="login-ui-box bg-cyan-200 -bottom-40 right-1/2" />
 
             <div className="container h-screen flex items-center justify-center px-20 mx-auto">
-                <div className="w-2/4 h-[90vh] flex items-end bg-signup-bg-img bg-cover bg-center rounded-lg p-10 z-50 ">
+                <div style={{ backgroundImage: `url(${bgImage})` }} className="w-2/4 h-[90vh] flex items-end bg-cover bg-center rounded-lg p-10 z-50 ">
                     <div>
                         <h4 className='text-5xl text-white font-semibold leading-[58px]'>
                             Join the <br /> Adventure
@@ -97,7 +98,7 @@ const SignUp = () => {
                             onChange={({ target }) => { setEmail(target.value) }}
                         />
 
-                        <PasswordInput 
+                        <PasswordInput
                             value={password}
                             onChange={({ target }) => { setPassword(target.value) }}
                         />
@@ -116,7 +117,7 @@ const SignUp = () => {
                                 navigate("/login")
                             }}
                         >
-                            LOGIN 
+                            LOGIN
                         </button>
                     </form>
                 </div>
