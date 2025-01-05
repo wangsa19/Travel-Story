@@ -363,10 +363,6 @@ app.get("/travel-stories/filter", authenticateToken, async (req, res) => {
     }
 });
 
-app.all("*", (req, res) => {
-    res.status(404).json({ error: true, message: "Route not found" });
-});
-
 app.listen(8000, () => {
     console.log("Server is running on port 8000");
 });
