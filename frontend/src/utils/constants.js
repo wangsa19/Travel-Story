@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://travel-story-api-six.vercel.app/';
+export const BASE_URL = 'https://travel-story-production.up.railway.app/';
