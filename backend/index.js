@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-const config = require("./config.json");
 const mongoose = require("mongoose");
 const bycrpt = require("bcrypt");
 const express = require("express");
@@ -17,7 +16,7 @@ const TravelStory = require("./models/travelStory.model");
 
 
 mongoose
-    .connect(config.connectionString)
+    .connect(process.env.MONGODB_URI)
     .then((result) => {
         console.log("connected to mongodb");
     })
@@ -362,6 +361,10 @@ app.get("/travel-stories/filter", authenticateToken, async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
     }
+});
+
+app.all("*", (req, res) => {
+    res.status(404).json({ error: true, message: "Route not found" });
 });
 
 app.listen(8000, () => {

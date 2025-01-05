@@ -8,7 +8,7 @@ const EmptyCard = ({ filterType, message }) => {
             <span className='w-24 h-24 rounded-full bg-cyan-100 flex items-center justify-center'>
                 {filterType === "search" && <MdOutlineSearchOff size={36} className='text-cyan-600' />}
                 {filterType === "date" && <FaRegCalendarXmark size={36} className='text-cyan-600' />}
-                {filterType === "default" && <GiScrollQuill size={36} className='text-cyan-600' />}
+                {filterType === "" && <GiScrollQuill size={36} className='text-cyan-600' />}
             </span>
 
             <p className='w-1/2 text-sm font-medium text-slate-700 text-center leading-7 mt-5'>

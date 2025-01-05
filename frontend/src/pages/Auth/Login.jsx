@@ -5,8 +5,8 @@ import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("user@travelstory.com");
+    const [password, setPassword] = useState("user@123");
     const [error, setError] = useState(false);
 
     const navigate = useNavigate();
@@ -93,6 +93,7 @@ const Login = () => {
                         </button>
 
                         <p className='text-xs text-slate-500 text-center my-4'>Or</p>
+                    </form>
 
                         <button
                             className='btn-primary btn-light'
@@ -102,7 +103,6 @@ const Login = () => {
                         >
                             CREATE ACCOUNT
                         </button>
-                    </form>
                 </div>
             </div>
         </div>

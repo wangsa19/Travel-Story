@@ -75,3 +75,7 @@
         @apply text-xs text-slate-400;
     }
 }
+
+.error{
+    @apply flex flex-col justify-center items-center h-screen w-screen bg-white text-primary text-sm sm:text-2xl xl:text-4xl;
+}
