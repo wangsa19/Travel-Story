@@ -28,6 +28,11 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+// index be
+app.get("/", (req, res) => {
+    res.send("Welcome Travel Story!");
+});
+
 // Create Account
 app.post("/create-account", async (req, res) => {
     const { fullName, email, password } = req.body;
